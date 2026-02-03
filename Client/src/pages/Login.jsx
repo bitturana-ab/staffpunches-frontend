@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
@@ -7,6 +7,16 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+
+  // Auto redirect if already logged in to their role page
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    if (token && user?.role) {
+      user.role === "admin" ? navigate("/admin") : navigate("/staff");
+    }
+  }, [navigate]);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -23,7 +33,7 @@ const Login = () => {
 
       res.data.user.role === "admin" ? navigate("/admin") : navigate("/staff");
     } catch (err) {
-      console.log(err);
+      console.error(err);
       alert("Invalid email or password");
     } finally {
       setLoading(false);
