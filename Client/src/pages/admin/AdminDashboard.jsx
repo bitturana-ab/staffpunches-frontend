@@ -1,11 +1,10 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const Admin = () => {
   const [staff, setStaff] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
   const [newStaff, setNewStaff] = useState({
     name: "",
     email: "",
@@ -14,19 +13,14 @@ const Admin = () => {
   const navigate = useNavigate();
 
   const token = localStorage.getItem("token");
-  const user = JSON.parse(localStorage.getItem("user"));
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
 
-  // Redirect if not admin
   useEffect(() => {
-    if (!token || user.role !== "admin") {
-      navigate("/login");
-    }
+    if (!token || user.role !== "admin") navigate("/login");
   }, [token, user, navigate]);
 
-  // Fetch all staff
   const fetchStaff = async () => {
     setLoading(true);
-    setError("");
     try {
       const res = await axios.get("https://staffpunches.vercel.app/api/staff", {
         headers: { Authorization: `Bearer ${token}` },
@@ -34,7 +28,7 @@ const Admin = () => {
       setStaff(res.data.staff);
     } catch (err) {
       console.error(err);
-      setError("Failed to load staff data.");
+      alert("Failed to fetch staff");
     } finally {
       setLoading(false);
     }
@@ -44,7 +38,6 @@ const Admin = () => {
     fetchStaff();
   }, []);
 
-  // Create new staff
   const handleCreateStaff = async (e) => {
     e.preventDefault();
     try {
@@ -55,13 +48,12 @@ const Admin = () => {
       fetchStaff();
     } catch (err) {
       console.error(err);
-      alert("Failed to create staff.");
+      alert(err.response?.data?.message || "Failed to create staff");
     }
   };
 
-  // Delete staff
   const handleDeleteStaff = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this staff?")) return;
+    if (!window.confirm("Are you sure to delete this staff?")) return;
     try {
       await axios.delete(`https://staffpunches.vercel.app/api/staff/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
@@ -69,7 +61,7 @@ const Admin = () => {
       fetchStaff();
     } catch (err) {
       console.error(err);
-      alert("Failed to delete staff.");
+      alert("Failed to delete staff");
     }
   };
 
@@ -80,39 +72,50 @@ const Admin = () => {
   };
 
   return (
-    <div className="p-6 min-h-screen bg-gray-100">
+    <div className="p-6 bg-gray-100 min-h-screen">
+      {/* Header */}
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-semibold">Admin Dashboard</h1>
+        <h1 className="text-2xl font-bold">Admin Dashboard</h1>
         <button
-          onClick={handleLogout}
           className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+          onClick={handleLogout}
         >
           Logout
         </button>
       </div>
 
-      {/* Create Staff */}
+      {/* Admin Profile */}
+      <div className="bg-white p-4 rounded shadow mb-6">
+        <h2 className="text-xl font-semibold mb-2">Admin Profile</h2>
+        <p>
+          <span className="font-medium">Name:</span> {user.name || "N/A"}
+        </p>
+        <p>
+          <span className="font-medium">Email:</span> {user.email || "N/A"}
+        </p>
+      </div>
+
+      {/* Create Staff Form */}
       <form
         onSubmit={handleCreateStaff}
-        className="bg-white p-4 rounded shadow mb-6 md:flex grid gap-2"
+        className="grid md:grid-cols-4 gap-2 mb-6 bg-white p-4 rounded shadow"
       >
         <input
-          className="border p-2 flex-1"
           placeholder="Name"
           value={newStaff.name}
           onChange={(e) => setNewStaff({ ...newStaff, name: e.target.value })}
           required
+          className="border p-2 rounded"
         />
         <input
-          className="border p-2 flex-1"
           placeholder="Email"
           type="email"
           value={newStaff.email}
           onChange={(e) => setNewStaff({ ...newStaff, email: e.target.value })}
           required
+          className="border p-2 rounded"
         />
         <input
-          className="border p-2 flex-1"
           placeholder="Password"
           type="password"
           minLength={6}
@@ -121,6 +124,7 @@ const Admin = () => {
             setNewStaff({ ...newStaff, password: e.target.value })
           }
           required
+          className="border p-2 rounded"
         />
         <button className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
           Add Staff
@@ -130,41 +134,41 @@ const Admin = () => {
       {/* Staff Table */}
       {loading ? (
         <p>Loading staff...</p>
-      ) : error ? (
-        <p className="text-red-500">{error}</p>
       ) : (
-        <div className="overflow-x-auto ">
-          <table className="border bg-white shadow rounded-lg">
+        <div className="overflow-x-auto">
+          <table className="w-full border bg-white rounded shadow">
             <thead className="bg-gray-200">
               <tr>
-                <th className="px-4 py-2 text-left">Name</th>
-                <th className="px-4 py-2 text-left">Email</th>
-                <th className="px-4 py-2 text-left">Role</th>
-                <th className="px-4 py-2 text-left">Actions</th>
+                <th className="p-2 border">Name</th>
+                <th className="p-2 border">Email</th>
+                <th className="p-2 border">Role</th>
+                <th className="p-2 border">Actions</th>
               </tr>
             </thead>
             <tbody>
               {staff.map((s) => (
                 <tr key={s._id} className="border-t">
-                  <td className="px-4 py-2">{s.name}</td>
-                  <td className="px-4 py-2">{s.email}</td>
-                  <td className="px-4 py-2 capitalize">{s.role}</td>
-                  <td className="px-4 py-2 space-x-2">
+                  <td className="p-2">{s.name}</td>
+                  <td className="p-2">{s.email}</td>
+                  <td className="p-2 capitalize">{s.role}</td>
+                  <td className="p-2 space-x-2">
                     <button
-                      className="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600"
-                      onClick={() => navigate(`/staff-attendance/${s._id}`)}
+                      onClick={() =>
+                        navigate(`/admin/staff-attendance/${s._id}`)
+                      }
+                      className="bg-gray-500 text-white px-2 py-1 rounded hover:bg-gray-600"
                     >
                       Attendance
                     </button>
                     <button
+                      onClick={() => navigate(`/admin/staff-tasks/${s._id}`)}
                       className="bg-yellow-500 text-white px-2 py-1 rounded hover:bg-yellow-600"
-                      onClick={() => navigate(`/staff-tasks/${s._id}`)}
                     >
                       Tasks
                     </button>
                     <button
-                      className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
                       onClick={() => handleDeleteStaff(s._id)}
+                      className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
                     >
                       Delete
                     </button>

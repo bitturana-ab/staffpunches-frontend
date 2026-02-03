@@ -3,51 +3,69 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 const StaffDashboard = () => {
-  const [punch, setPunch] = useState({});
-  const [tasks, setTasks] = useState([]);
+  const [attendance, setAttendance] = useState(null); // today's punch
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+
   const token = localStorage.getItem("token");
-  const user = JSON.parse(localStorage.getItem("user"));
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
 
   useEffect(() => {
     if (!token || user.role !== "staff") navigate("/login");
-    fetchPunch();
-    fetchTasks();
+    fetchAttendance();
   }, []);
 
-  const fetchPunch = async () => {
+  // Fetch all attendance and get today's record
+  const fetchAttendance = async () => {
+    setLoading(true);
     try {
       const res = await axios.get(
-        "https://staffpunches.vercel.app/api/punch/today",
+        `https://staffpunches.vercel.app/api/punch/me`,
         { headers: { Authorization: `Bearer ${token}` } },
       );
-      setPunch(res.data.punch);
+
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      // Find today's punch from all records
+      const todayAttendance = res.data.records.find(
+        (p) => new Date(p.punchIn) >= today,
+      );
+
+      setAttendance(todayAttendance || null);
     } catch (err) {
       console.error(err);
+      alert("Failed to fetch attendance");
+    } finally {
+      setLoading(false);
     }
   };
 
-  const fetchTasks = async () => {
-    try {
-      const res = await axios.get("https://staffpunches.vercel.app/api/tasks", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setTasks(res.data.tasks);
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  const handlePunch = async (type) => {
+  const handlePunchIn = async () => {
     try {
       await axios.post(
-        `https://staffpunches.vercel.app/api/punch/${type}`,
+        `https://staffpunches.vercel.app/api/punch/punch-in`,
         {},
         { headers: { Authorization: `Bearer ${token}` } },
       );
-      fetchPunch();
+      fetchAttendance();
     } catch (err) {
-      alert(err.response.data.message || "Failed to punch");
+      console.error(err);
+      alert(err.response?.data?.message || "Punch in failed");
+    }
+  };
+
+  const handlePunchOut = async () => {
+    try {
+      await axios.post(
+        `https://staffpunches.vercel.app/api/punch/punch-out`,
+        {},
+        { headers: { Authorization: `Bearer ${token}` } },
+      );
+      fetchAttendance();
+    } catch (err) {
+      console.error(err);
+      alert(err.response?.data?.message || "Punch out failed");
     }
   };
 
@@ -58,72 +76,87 @@ const StaffDashboard = () => {
   };
 
   return (
-    <div className="p-6 min-h-screen bg-gray-100">
+    <div className="p-6 bg-gray-100 min-h-screen">
+      {/* Header */}
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-semibold">Staff Dashboard</h1>
+        <h1 className="text-2xl font-bold">Staff Dashboard</h1>
         <button
-          onClick={handleLogout}
           className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+          onClick={handleLogout}
         >
           Logout
         </button>
       </div>
 
-      {/* Punch Section */}
-      <div className="bg-white p-4 rounded shadow mb-6 flex gap-2">
-        <button
-          disabled={!!punch.punchIn}
-          className={`px-4 py-2 rounded ${
-            punch.punchIn ? "bg-gray-400" : "bg-green-500 text-white"
-          }`}
-          onClick={() => handlePunch("punchIn")}
-        >
-          Punch In
-        </button>
-        <button
-          disabled={!!punch.lunchOut}
-          className={`px-4 py-2 rounded ${
-            punch.lunchOut ? "bg-gray-400" : "bg-yellow-500 text-white"
-          }`}
-          onClick={() => handlePunch("lunchOut")}
-        >
-          Lunch Out
-        </button>
-        <button
-          disabled={!!punch.punchOut}
-          className={`px-4 py-2 rounded ${
-            punch.punchOut ? "bg-gray-400" : "bg-red-500 text-white"
-          }`}
-          onClick={() => handlePunch("punchOut")}
-        >
-          Punch Out
-        </button>
+      {/* User Info */}
+      <div className="bg-white p-4 rounded shadow mb-6">
+        <h2 className="text-xl font-semibold mb-2">Profile</h2>
+        <p>
+          <span className="font-medium">Name:</span> {user.name || "N/A"}
+        </p>
+        <p>
+          <span className="font-medium">Email:</span> {user.email || "N/A"}
+        </p>
       </div>
 
-      {/* Task Section */}
-      <div className="bg-white p-4 rounded shadow">
-        <h2 className="text-xl mb-4">My Tasks</h2>
-        {tasks.length === 0 ? (
-          <p>No tasks assigned</p>
+      {/* Today's Attendance */}
+      <div className="bg-white p-6 rounded shadow mb-6">
+        <h2 className="text-xl font-semibold mb-2">Today's Attendance</h2>
+        {loading ? (
+          <p>Loading...</p>
+        ) : attendance ? (
+          <div className="space-y-2">
+            <p>
+              Punch In:{" "}
+              {attendance.punchIn
+                ? new Date(attendance.punchIn).toLocaleTimeString()
+                : "Not yet"}
+            </p>
+            <p>
+              Punch Out:{" "}
+              {attendance.punchOut
+                ? new Date(attendance.punchOut).toLocaleTimeString()
+                : "Not yet"}
+            </p>
+          </div>
         ) : (
-          <ul className="space-y-2">
-            {tasks.map((t) => (
-              <li
-                key={t._id}
-                className="border p-2 rounded flex justify-between"
-              >
-                <span>{t.title}</span>
-                <span
-                  className={`px-2 py-1 rounded ${
-                    t.status === "completed" ? "bg-green-200" : "bg-yellow-200"
-                  }`}
-                >
-                  {t.status}
-                </span>
-              </li>
-            ))}
-          </ul>
+          <p>No attendance recorded yet</p>
         )}
+
+        <div className="mt-4 space-x-2">
+          {!attendance?.punchIn && (
+            <button
+              className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+              onClick={handlePunchIn}
+            >
+              Punch In
+            </button>
+          )}
+          {attendance?.punchIn && !attendance?.punchOut && (
+            <button
+              className="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600"
+              onClick={handlePunchOut}
+            >
+              Punch Out
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* Navigation Buttons */}
+      <div className="space-x-4">
+        <button
+          onClick={() => navigate("/staff/tasks")}
+          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+        >
+          View Tasks
+        </button>
+        <button
+          onClick={() => navigate("/staff/attendance")}
+          className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
+        >
+          View Attendance
+        </button>
       </div>
     </div>
   );

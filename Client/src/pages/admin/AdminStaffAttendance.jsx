@@ -12,30 +12,27 @@ const AdminStaffAttendance = () => {
   const user = JSON.parse(localStorage.getItem("user"));
 
   useEffect(() => {
-    if (!token || user?.role !== "admin") {
-      navigate("/login");
-    }
+    if (!token || user?.role !== "admin") navigate("/login");
   }, [token, user, navigate]);
 
-  useEffect(() => {
-    const fetchAttendance = async () => {
-      try {
-        const res = await axios.get(
-          `https://staffpunches.vercel.app/api/punch/${staffId}`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          },
-        );
-        setRecords(res.data.records);
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const fetchAttendance = async () => {
+    try {
+      const res = await axios.get(
+        `https://staffpunches.vercel.app/api/punch/${staffId}`,
+        { headers: { Authorization: `Bearer ${token}` } },
+      );
+      setRecords(res.data.records);
+    } catch (err) {
+      console.error(err);
+      alert("Failed to fetch attendance");
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchAttendance();
-  }, [staffId, token]);
+  }, [staffId]);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -56,7 +53,6 @@ const AdminStaffAttendance = () => {
           >
             Back to Dashboard
           </button>
-
           <button
             onClick={handleLogout}
             className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
