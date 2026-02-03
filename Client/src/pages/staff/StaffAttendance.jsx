@@ -38,10 +38,10 @@ const StaffAttendance = () => {
     <div className="p-6 bg-gray-100 min-h-screen">
       {/* Header */}
       <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-bold">My Attendance Records</h1>
+        <h1 className="text-sm md:text-2xl font-bold">My Attendance Records</h1>
         <button
           onClick={() => navigate("/staff")}
-          className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
+          className="bg-gray-500 text-white px-4 py-2 text-sm md:text-xl cursor-pointer duration-300 rounded hover:bg-gray-600"
         >
           Back to Dashboard
         </button>

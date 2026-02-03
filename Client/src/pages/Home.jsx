@@ -4,7 +4,7 @@ const Home = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-blue-50 to-blue-100 p-6">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-linear-to-br from-blue-50 to-blue-100 p-6">
       <div className="bg-white p-8 rounded-lg shadow-md max-w-xl text-center">
         <h1 className="text-3xl font-bold mb-4 text-blue-600">
           Staff Punches Management System

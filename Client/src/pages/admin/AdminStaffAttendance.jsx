@@ -35,27 +35,32 @@ const AdminStaffAttendance = () => {
   }, [staffId]);
 
   const handleLogout = () => {
+    const confirmLogout = window.confirm("Are you sure you want to logout?");
+    if (!confirmLogout) return; // Stop if user cancels
+
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     navigate("/login");
   };
 
   return (
-    <div className="p-6 min-h-screen bg-gray-100">
+    <div className="p-3 min-h-screen bg-gray-100">
       {/* Header */}
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-semibold">Staff Attendance Records</h1>
+      <div className="flex justify-between items-center mb-6 bg-gray-200 p-2 rounded">
+        <h1 className="text-sm md:text-2xl font-semibold">
+          Staff Attendance Records
+        </h1>
 
-        <div className="space-x-2">
+        <div className="md:space-x-2 space-x-1 flex">
           <button
             onClick={() => navigate("/admin")}
-            className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
+            className="bg-gray-500 text-white md:px-4 md:py-2 text-sm p-1 rounded cursor-pointer duration-300 hover:bg-gray-600"
           >
             Back to Dashboard
           </button>
           <button
             onClick={handleLogout}
-            className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+            className="bg-red-500 text-white px-4 py-2 rounded cursor-pointer duration-300 hover:bg-red-800"
           >
             Logout
           </button>

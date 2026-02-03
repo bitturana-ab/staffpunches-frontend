@@ -66,18 +66,21 @@ const Admin = () => {
   };
 
   const handleLogout = () => {
+    const confirmLogout = window.confirm("Are you sure you want to logout?");
+    if (!confirmLogout) return; // Stop if user cancels
+
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     navigate("/login");
   };
 
   return (
-    <div className="p-6 bg-gray-100 min-h-screen">
+    <div className="p-3 bg-gray-100 min-h-screen">
       {/* Header */}
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex justify-between items-center bg-gray-200 rounded px-4 py-2 mb-6">
         <h1 className="text-2xl font-bold">Admin Dashboard</h1>
         <button
-          className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+          className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-800 duration-300 cursor-pointer"
           onClick={handleLogout}
         >
           Logout
@@ -126,7 +129,7 @@ const Admin = () => {
           required
           className="border p-2 rounded"
         />
-        <button className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
+        <button className="bg-green-500 text-white px-4 py-2 cursor-pointer duration-300 rounded hover:bg-green-600">
           Add Staff
         </button>
       </form>

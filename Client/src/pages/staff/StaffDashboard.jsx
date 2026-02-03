@@ -78,10 +78,10 @@ const StaffDashboard = () => {
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
       {/* Header */}
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex justify-between items-center bg-gray-200 px-4 py-2 rounded-md mb-6">
         <h1 className="text-2xl font-bold">Staff Dashboard</h1>
         <button
-          className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+          className="bg-red-500 text-white px-4 py-2 rounded cursor-pointer hover:bg-red-800 duration-300"
           onClick={handleLogout}
         >
           Logout
@@ -147,13 +147,13 @@ const StaffDashboard = () => {
       <div className="space-x-4">
         <button
           onClick={() => navigate("/staff/tasks")}
-          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+          className="bg-blue-500 text-white px-4 py-2 rounded cursor-pointer duration-300 hover:bg-blue-600"
         >
           View Tasks
         </button>
         <button
           onClick={() => navigate("/staff/attendance")}
-          className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
+          className="bg-gray-500 text-white px-4 py-2 rounded cursor-pointer duration-300 hover:bg-gray-600"
         >
           View Attendance
         </button>
