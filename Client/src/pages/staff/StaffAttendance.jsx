@@ -8,7 +8,7 @@ const StaffAttendance = () => {
   const navigate = useNavigate();
 
   const token = localStorage.getItem("token");
-  const user = JSON.parse(localStorage.getItem("user"));
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
 
   useEffect(() => {
     if (!token || user.role !== "staff") navigate("/login");
@@ -19,12 +19,13 @@ const StaffAttendance = () => {
     setLoading(true);
     try {
       const res = await axios.get(
-        `https://staffpunches.vercel.app/api/attendance/me/all`,
+        `https://staffpunches.vercel.app/api/punch/me`,
         {
           headers: { Authorization: `Bearer ${token}` },
         },
       );
-      setRecords(res.data.attendance);
+      // Assuming the API returns attendance records in res.data.records
+      setRecords(res.data.records || []);
     } catch (err) {
       console.error(err);
       alert("Failed to fetch attendance");
@@ -35,41 +36,53 @@ const StaffAttendance = () => {
 
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
-      <h1 className="text-2xl font-bold mb-4">My Attendance Records</h1>
-      <button
-        onClick={() => navigate("/staff")}
-        className="bg-gray-500 text-white px-4 py-2 rounded mb-4 hover:bg-gray-600"
-      >
-        Back to Dashboard
-      </button>
+      {/* Header */}
+      <div className="flex justify-between items-center mb-4">
+        <h1 className="text-2xl font-bold">My Attendance Records</h1>
+        <button
+          onClick={() => navigate("/staff")}
+          className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
+        >
+          Back to Dashboard
+        </button>
+      </div>
 
+      {/* Attendance Table */}
       {loading ? (
-        <p>Loading...</p>
+        <p>Loading attendance...</p>
+      ) : records.length === 0 ? (
+        <p>No attendance records found.</p>
       ) : (
-        <table className="w-full border bg-white rounded shadow">
-          <thead className="bg-gray-200">
-            <tr>
-              <th className="p-2 border">Date</th>
-              <th className="p-2 border">Punch In</th>
-              <th className="p-2 border">Punch Out</th>
-            </tr>
-          </thead>
-          <tbody>
-            {records.map((r) => (
-              <tr key={r._id}>
-                <td className="p-2 border">
-                  {new Date(r.date).toLocaleDateString()}
-                </td>
-                <td className="p-2 border">
-                  {r.punchIn ? new Date(r.punchIn).toLocaleTimeString() : "—"}
-                </td>
-                <td className="p-2 border">
-                  {r.punchOut ? new Date(r.punchOut).toLocaleTimeString() : "—"}
-                </td>
+        <div className="overflow-x-auto">
+          <table className="w-full border bg-white rounded shadow">
+            <thead className="bg-gray-200">
+              <tr>
+                <th className="p-2 border">Date</th>
+                <th className="p-2 border">Punch In</th>
+                <th className="p-2 border">Punch Out</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {records.map((r) => (
+                <tr key={r._id} className="border-t">
+                  <td className="p-2 border">
+                    {r.punchIn
+                      ? new Date(r.punchIn).toLocaleDateString()
+                      : "N/A"}
+                  </td>
+                  <td className="p-2 border">
+                    {r.punchIn ? new Date(r.punchIn).toLocaleTimeString() : "—"}
+                  </td>
+                  <td className="p-2 border">
+                    {r.punchOut
+                      ? new Date(r.punchOut).toLocaleTimeString()
+                      : "—"}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
     </div>
   );
