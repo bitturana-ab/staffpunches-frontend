@@ -19,7 +19,7 @@ const StaffTasks = () => {
     setLoading(true);
     try {
       const res = await axios.get(
-        `https://staffpunches.vercel.app/api/tasks/me`,
+        `https://staffpunches.vercel.app/api/task/me`,
         {
           headers: { Authorization: `Bearer ${token}` },
         },
@@ -35,8 +35,8 @@ const StaffTasks = () => {
 
   const handleStatusUpdate = async (taskId, status) => {
     try {
-      await axios.patch(
-        `https://staffpunches.vercel.app/api/tasks/${taskId}`,
+      await axios.put(
+        `https://staffpunches.vercel.app/api/task/${taskId}`,
         { status },
         {
           headers: { Authorization: `Bearer ${token}` },
