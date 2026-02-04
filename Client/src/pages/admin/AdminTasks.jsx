@@ -75,7 +75,7 @@ const AdminTasks = () => {
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Admin Task Dashboard</h1>
         <button
-          className="bg-gray-500 text-white h-10 w-22 mr-2 md:ml-auto rounded hover:bg-gray-800 duration-300 cursor-pointer"
+          className="bg-gray-500 text-white h-10 p-1 mr-2 md:ml-auto rounded hover:bg-gray-800 duration-300 cursor-pointer"
           onClick={() => navigate("/admin")}
         >
           Dashboard
@@ -91,14 +91,14 @@ const AdminTasks = () => {
       {/* Assign Task */}
       <form
         onSubmit={handleAssignTask}
-        className="grid md:grid-cols-4 gap-2 mb-6 bg-white p-4 rounded shadow"
+        className="md:grid md:grid-cols-4 gap-2 mb-6 bg-white p-4 rounded shadow"
       >
         <input
           placeholder="Title"
           value={newTask.title}
           onChange={(e) => setNewTask({ ...newTask, title: e.target.value })}
           required
-          className="border p-2 rounded"
+          className="border p-2 m-3 rounded"
         />
         <input
           placeholder="Description"
@@ -107,7 +107,7 @@ const AdminTasks = () => {
             setNewTask({ ...newTask, description: e.target.value })
           }
           required
-          className="border p-2 rounded"
+          className="border p-2 m-3 rounded"
         />
         <select
           value={newTask.assignedTo}
@@ -115,7 +115,7 @@ const AdminTasks = () => {
             setNewTask({ ...newTask, assignedTo: e.target.value })
           }
           required
-          className="border p-2 rounded"
+          className="border p-2 m-3 rounded"
         >
           <option value="">Assign To</option>
           {staffList.map((s) => (
@@ -129,7 +129,7 @@ const AdminTasks = () => {
           value={newTask.dueDate}
           onChange={(e) => setNewTask({ ...newTask, dueDate: e.target.value })}
           required
-          className="border p-2 rounded"
+          className="border p-2 m-3 rounded"
         />
         <button className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 col-span-4 md:col-span-1">
           Assign Task
