@@ -137,7 +137,7 @@ const AdminTasks = () => {
       </form>
 
       {/* Task Table */}
-      <div className="bg-white p-4 rounded shadow">
+      <div className="bg-white p-4 overflow-x-auto rounded shadow">
         <h2 className="text-lg font-semibold mb-3">All Tasks</h2>
         {loading ? (
           <p>Loading tasks...</p>
