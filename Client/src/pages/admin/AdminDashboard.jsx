@@ -80,6 +80,12 @@ const Admin = () => {
       <div className="flex justify-between items-center bg-gray-200 rounded px-4 py-2 mb-6">
         <h1 className="text-2xl font-bold">Admin Dashboard</h1>
         <button
+          className="bg-green-500 text-white h-10 w-22 mr-2 md:ml-auto rounded hover:bg-green-800 duration-300 cursor-pointer"
+          onClick={() => navigate("/admin/tasks")}
+        >
+          Add Task
+        </button>
+        <button
           className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-800 duration-300 cursor-pointer"
           onClick={handleLogout}
         >
