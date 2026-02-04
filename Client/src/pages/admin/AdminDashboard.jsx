@@ -157,10 +157,10 @@ const Admin = () => {
             <tbody>
               {staff.map((s) => (
                 <tr key={s._id} className="border-t">
-                  <td className="p-2">{s.name}</td>
-                  <td className="p-2">{s.email}</td>
-                  <td className="p-2 capitalize">{s.role}</td>
-                  <td className="p-2 space-x-2">
+                  <td className="p-2 border">{s.name}</td>
+                  <td className="p-2 border">{s.email}</td>
+                  <td className="p-2 border capitalize">{s.role}</td>
+                  <td className="p-2 border space-x-2">
                     <button
                       onClick={() =>
                         navigate(`/admin/staff-attendance/${s._id}`)
